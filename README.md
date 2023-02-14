@@ -4,4 +4,3 @@ This repo is for the dev Branch of my Meiru-Nee discord bot. This branch is **ST
 Feel free to join my dev discord server which will contain other discord bot repos in progress as well or if you need to contact me directly @XLordnoro#2815.
 
 https://discord.gg/H8ARjM483D
-
