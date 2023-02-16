@@ -23,12 +23,12 @@ const {
     async execute(interaction, client) {
       const { roles } = interaction.member;
       const role = await interaction.guild.roles
-        .fetch("1070213452397826092")
+        .fetch("1073460830110228611")
         .catch(console.error);
 
 //Cross-checks the fetch from earlier and if the user has the role, run the command. Otherwise, print a message to the user stating they lack the role required.
         
-      if (roles.cache.has("1070213452397826092")) {
+      if (roles.cache.has("1073460830110228611")) {
         const embed = new EmbedBuilder()
           .setTitle(`May the odds be ever in your favor`)
           .setDescription(
@@ -65,8 +65,8 @@ const {
 
 //Sends the output of the embed to a different channel and pings the role via their id. Otherwise, print they lack the role required to run the command.
 
-        const channel = client.channels.cache.get('1070431762196471888');
-        channel.send({content: `<@&1070214154926956584>`, allowedMentions: { roles: ['1070214154926956584'] }, embeds: [embed], components: [buttons]});
+        const channel = client.channels.cache.get('1073467097675477042');
+        channel.send({content: `<@&1073466795337453599>`, allowedMentions: { roles: ['1073466795337453599'] }, embeds: [embed], components: [buttons]});
 
       } else {
         await interaction.reply({
