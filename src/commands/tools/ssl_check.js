@@ -1,6 +1,6 @@
 const { PermissionFlagsBits, PermissionsBitField, SlashCommandBuilder } = require('discord.js');
 const https = require('https');
-const { parseISO, differenceInDays } = require('date-fns');
+const { parse, format, differenceInDays } = require('date-fns');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -13,32 +13,31 @@ module.exports = {
 
   async execute(interaction, client) {
 
-    //fetches the Developer role ID to be used later in the command.
+    //fetches the developer role ID to be used later in the command.
 
     const { roles } = interaction.member;
     const role = await interaction.guild.roles
       .fetch("1074229659119661058")
       .catch(console.error);
 
-    //cross-references if the user running the command has the Developer role. Otherwise, state they lack the Developer role.
+    //cross-references if the user running the command has the developer role. Otherwise, state they lack the developer role.
 
     if (roles.cache.has("1074229659119661058")) {
     try {
       const websiteURL = interaction.options.getString('website');
       const req = https.request(websiteURL, (res) => {
         const certificate = res.socket.getPeerCertificate();
-        const expirationDate = parseISO(certificate.valid_to);
+        const expirationDateStr = certificate.valid_to; // Get the date string
+        console.log('Certificate Data:', certificate);
 
-        if (expirationDate) {
+        // Convert the date string to a JavaScript Date object
+        const expirationDate = parse(expirationDateStr, 'MMM dd HH:mm:ss yyyy \'GMT\'', new Date());
+
+        if (!isNaN(expirationDate)) {
           const daysRemaining = differenceInDays(expirationDate, new Date());
           if (daysRemaining <= 7) {
-            const expirationString = expirationDate.toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            });
             interaction.reply({
-              content: `:warning: SSL certificate for ${websiteURL} will expire on ${expirationString} (${daysRemaining} days remaining).`,
+              content: `:warning: SSL certificate for ${websiteURL} will expire in ${daysRemaining} days.`,
               ephemeral: true, // Only visible to the user who triggered the command
             });
           } else {
