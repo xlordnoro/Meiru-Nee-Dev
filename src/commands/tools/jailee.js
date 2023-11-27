@@ -28,17 +28,17 @@ module.exports = {
   async execute(interaction, client) {
     const { roles } = interaction.member;
     const role = await interaction.guild.roles
-      .fetch("1070214154926956584")
+      .fetch("1073466795337453599")
       .catch(console.error);
 
-    //Cross-checks if the user has the admin role. If true, run the command. Otherwise, print a message to the user stating they lack the admin role.
+    //Cross-checks if the user has the developer role. If true, run the command. Otherwise, print a message to the user stating they lack the developer role.
 
-    if (roles.cache.has("691795495588200487")) {
+    if (roles.cache.has("1074229659119661058")) {
       const user = interaction.options.getMember("target");
 
       //Checks if the user has the jailee role. If true, print a message to the user stating they have the role. Otherwise, add the jailee role to the specified user.
 
-      if (user.roles.cache.has("1070214154926956584")) {
+      if (user.roles.cache.has("1073466795337453599")) {
         await interaction.deferReply({
           fetchReply: true,
           ephemeral: true,
@@ -62,14 +62,14 @@ module.exports = {
 
         //Direct the command output to the specified channel via their id ie. #Colosseum
 
-        const channel = client.channels.cache.get("1070431762196471888");
+        const channel = client.channels.cache.get("1178530424914444368");
         channel.send({
           content: `@everyone ${user} has been volunteered for sadistic tribute!`,
         });
       }
     } else {
       await interaction.reply({
-        content: `You do not have the Admin role.`,
+        content: `You do not have the Developer role.`,
         ephemeral: true,
       });
     }

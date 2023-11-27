@@ -17,7 +17,7 @@ module.exports = {
     // Fetch the guild to access roles and client
     const guild = await client.guilds.fetch(interaction.guildId).catch(console.error);
 
-    // Cross-references if the user running the command has the ninja role. Otherwise, state they lack the ninja role.
+    // Cross-references if the user running the command has the developer role. Otherwise, state they lack the developer role.
     if (roles.cache.has("1074229659119661058")) {
       try {
         await interaction.deferReply({ ephemeral: true });

@@ -23,18 +23,18 @@ const {
     async execute(interaction, client) {
       const { roles } = interaction.member;
       const role = await interaction.guild.roles
-        .fetch("1073461424577335327")
+        .fetch("1073466795337453599")
         .catch(console.error);
 
 //Cross-checks the fetch from earlier and if the user has the role, run the command. Otherwise, print a message to the user stating they lack the role required.
         
-      if (roles.cache.has("1073461424577335327")) {
+      if (roles.cache.has("1074229659119661058")) {
         const embed = new EmbedBuilder()
           .setTitle(`Thank You, Devil Boy, and Welcome to Hell!`)
           .setDescription(
             `So, you thought you were safe by ignoring all of my warnings, did you? Well, I guess I shouldn't be surprised after being raised in a hell-hole kinda place like this for the last eighteen years of your life. Unfortunately, there will be no heroic escape, nor will you be saving any princesses in here. \n\nDepending on your reading speed, and if you have a functioning pair of eyes and a brain, you might be able to escape from here as I know about a  hidden path that the admins don't... Below are four choices, Devil Boy. Choose correctly and you'll find yourself on the other side of the gate to Hell. Choose incorrectly *heehee and I guess we'll be spending a lot of time together, Devil Boy.`
           )
-          .setColor(14554646)
+          .setColor('#3498db')
 
 //Creates an array containing the buttons for the embed. The limit is 5/message and that's set by discord, not me.
 
@@ -71,11 +71,11 @@ const {
 //Sends the output of the embed to a different channel and pings the role via their id. Otherwise, print they lack the role required to run the command.
 
         const channel = client.channels.cache.get('1073467097675477042');
-        channel.send({content: `<@&1073466795337453599>`, allowedMentions: { roles: ['1073466795337453599'] }, embeds: [embed], components: [buttons]});
+        channel.send({content: `<@&1073466795337453599>`, embeds: [embed], components: [buttons], allowedMentions: { roles: ['1073466795337453599'] }});
 
       } else {
         await interaction.reply({
-          content: `You do not have the ${role.name} role.`,
+          content: `You do not have the Developer role.`,
           ephemeral: true,
         });
       }

@@ -23,18 +23,18 @@ const {
     async execute(interaction, client) {
       const { roles } = interaction.member;
       const role = await interaction.guild.roles
-        .fetch("1073460830110228611")
+        .fetch("1074229659119661058")
         .catch(console.error);
 
 //Cross-checks the fetch from earlier and if the user has the role, run the command. Otherwise, print a message to the user stating they lack the role required.
         
-      if (roles.cache.has("1073460830110228611")) {
+      if (roles.cache.has("1074229659119661058")) {
         const embed = new EmbedBuilder()
           .setTitle(`May the odds be ever in your favor`)
           .setDescription(
             `Please select from the following options to protect yourself in battle.`
           )
-          .setColor(14554646)
+          .setColor('#3498db')
 
 //Creates an array containing the buttons for the embed. The limit is 5/message and that's set by discord, not me.
 
@@ -70,7 +70,7 @@ const {
 
       } else {
         await interaction.reply({
-          content: `You do not have the ${role.name} role.`,
+          content: `You do not have the Developer role.`,
           ephemeral: true,
         });
       }

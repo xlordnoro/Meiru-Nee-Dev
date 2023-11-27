@@ -24,7 +24,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle(`Roles`)
       .setDescription(`Please click the button below to grant yourself the debugger role to view the other channels on the server.`)
-      .setColor(14554646)
+      .setColor('#3498db')
 
 //Create button to grant users the debugger role.
 
