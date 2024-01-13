@@ -118,8 +118,6 @@ module.exports = async (client) => {
       }
     }
 
-    accessGoogleSheets();
-
     // Schedule the checkLiveStatus function to run daily at 7 a.m.
     cron.schedule("0 7 * * *", () => {
       accessGoogleSheets();
