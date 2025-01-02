@@ -1,6 +1,7 @@
 //Define any of the required libraries or files to externally load/call for the command here.
 
 const {
+  MessageFlags,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
@@ -37,7 +38,7 @@ module.exports = {
 
     await interaction.reply({
       content: `Message sent.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
 //Sends output to welcome channel. Otherwise, print message stating the user lacks the required role.
