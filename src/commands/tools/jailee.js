@@ -1,13 +1,9 @@
-//Define any of the required libraries or files to externally load/call for the command here.
-
 const {
   MessageFlags,
   SlashCommandBuilder,
   PermissionFlagsBits,
   PermissionsBitField,
 } = require("discord.js");
-
-//Creates the slash command and adds a required user subcommand argument to grant the jailee role.
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,63 +12,52 @@ module.exports = {
     .addSubcommand((subcommand) =>
       subcommand
         .setName("user")
-        .setDescription(
-          "Enter the username of the person you want to grant the Jailee role."
-        )
+        .setDescription("Enter the username of the person you want to grant the Jailee role.")
         .addUserOption((option) =>
           option.setName("target").setDescription("The user").setRequired(true)
         )
     ),
 
-  //Fetches the jailee role that will be called later in the command.
-
   async execute(interaction, client) {
     const { roles } = interaction.member;
-    const role = await interaction.guild.roles
-      .fetch("1073466795337453599")
-      .catch(console.error);
+    const jaileeRoleId = "1073466795337453599";
+    const adminRoleId = "1074229659119661058";
+    const announcementChannelId = "1178530424914444368";
 
-    //Cross-checks if the user has the developer role. If true, run the command. Otherwise, print a message to the user stating they lack the developer role.
-
-    if (roles.cache.has("1074229659119661058")) {
-      const user = interaction.options.getMember("target");
-
-      //Checks if the user has the jailee role. If true, print a message to the user stating they have the role. Otherwise, add the jailee role to the specified user.
-
-      if (user.roles.cache.has("1073466795337453599")) {
-        await interaction.deferReply({
-          fetchReply: true,
-          flags: MessageFlags.Ephemeral,
-        });
-
-        await interaction.editReply({
-          content: `You already have the ${role.name} role.`,
-          flags: MessageFlags.Ephemeral,
-        });
-      } else {
-        await interaction.deferReply({
-          fetchReply: true,
-          flags: MessageFlags.Ephemeral,
-        });
-
-        await user.roles.add(role, user).catch(console.error);
-        await interaction.editReply({
-          content: `Added: ${role.name} role to ${user}.`,
-          flags: MessageFlags.Ephemeral,
-        });
-
-        //Direct the command output to the specified channel via their id ie. #Colosseum
-
-        const channel = client.channels.cache.get("1178530424914444368");
-        channel.send({
-          content: `@everyone ${user} has been volunteered for sadistic tribute!`,
-        });
-      }
-    } else {
-      await interaction.reply({
-        content: `You do not have the Developer role.`,
+    if (!roles.cache.has(adminRoleId)) {
+      return interaction.reply({
+        content: `You do not have the Admin role.`,
         flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    const user = interaction.options.getMember("target");
+    const jaileeRole = await interaction.guild.roles.fetch(jaileeRoleId).catch(console.error);
+
+    if (!jaileeRole) {
+      return interaction.reply({
+        content: `Error: Jailee role not found.`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+    const removableRoles = user.roles.cache.filter((role) => role.id !== interaction.guild.id);
+    await user.roles.remove(removableRoles).catch(console.error);
+    await user.roles.add(jaileeRole).catch(console.error);
+
+    await interaction.editReply({
+      content: `All roles removed and ${jaileeRole.name} role added to ${user}.`,
+      flags: MessageFlags.Ephemeral,
+    });
+
+    const channel = client.channels.cache.get(announcementChannelId);
+    if (channel) {
+      channel.send({
+        content: `@everyone ${user} has been volunteered for sadistic tribute!`,
       });
     }
   },
 };
+
