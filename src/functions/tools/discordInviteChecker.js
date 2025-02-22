@@ -23,7 +23,6 @@ const filePath = path.join(__dirname, '../../json/processedDiscordInvites.json')
 // Function to send email notification with the contents of the JSON file
 async function sendEmailNotification() {
     try {
-        // Read the contents of the JSON file
         let jsonData = [];
         if (fs.existsSync(filePath)) {
             const fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -32,13 +31,11 @@ async function sendEmailNotification() {
             }
         }
 
-        // Check if there are any entries in the JSON file
         if (jsonData.length === 0) {
             console.log('No unauthorized invite links detected. Skipping email notification.');
             return;
         }
 
-        // Email content
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: process.env.EMAIL_USER,
@@ -46,7 +43,6 @@ async function sendEmailNotification() {
             text: jsonData.join('\n')
         };
 
-        // Send email
         await transporter.sendMail(mailOptions);
         console.log('Email notification sent successfully.');
 
@@ -58,23 +54,11 @@ async function sendEmailNotification() {
 }
 
 module.exports = async (client) => {
-    // Listen for message events
-    client.on('messageCreate', async message => {
+    client.on('messageCreate', async (message) => {
         try {
-            // Check if message is defined and not null
-            if (!message) {
-                console.error('Message is null or undefined.');
-                return;
-            }
+            if (!message || message.author.bot) return;
 
-            // Ignore messages from bots
-            if (message.author.bot) {
-                return;
-            }
-
-            // Check if the message contains an invite link
-            if (message.content.match(/(discord\.gg\/\w+)|(steamcommunity\.com\/gift\/)|(https:\/\/discordgift\.site\/)/i)) {
-                // Check if the author of the message is an admin
+            if (message.content.match(/(discord\.gg\/\w+)|(steamcommunity\.com\/gift\/)|(https:\/\/discordgift\.site\/)|(steamcommunity\.com\/gift-card\/pay)|(@everyone)/i)) {
                 const member = message.member;
                 if (!member) {
                     console.error('Member is null or undefined.');
@@ -84,19 +68,22 @@ module.exports = async (client) => {
                 const isAdmin = member.roles.cache.some(role => adminRoleIds.includes(role.id));
 
                 if (!isAdmin) {
-                    // Inform the user that they need admin approval
+                    // Notify user and delete unauthorized message
                     const reply = await message.reply('You do not have permission to post invite links. Please contact an admin for approval.');
                     await message.delete();
                     console.log('Deleted message containing unauthorized invite link.');
 
-                    // Delete the message containing the invite link after 5 seconds
+                    // Delete the bot's reply after 5 seconds
                     setTimeout(async () => {
-                        await reply.delete();
+                        try {
+                            const fetchedReply = await message.channel.messages.fetch(reply.id);
+                            await fetchedReply.delete();
+                        } catch (err) {
+                            console.error('Failed to delete the reply message:', err);
+                        }
                     }, 5000);
 
-                    console.log('Deleting the reply message now.');
-
-                    // Append the response message to the JSON file
+                    // Append the unauthorized message to the JSON file
                     let jsonData = [];
                     if (fs.existsSync(filePath)) {
                         const fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -104,6 +91,7 @@ module.exports = async (client) => {
                             jsonData = JSON.parse(fileContent);
                         }
                     }
+
                     jsonData.push(`${message.author.tag} posted an unauthorized invite link on Discord: ${message.content}`);
                     fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 4));
                 } else {
@@ -111,11 +99,11 @@ module.exports = async (client) => {
                 }
             }
         } catch (error) {
-            console.error('Error in handleInviteLinks:', error);
+            console.error('Error in messageCreate event handler:', error);
         }
     });
 
-    // Schedule the email sending to occur daily at 7 a.m.
+    // Schedule email sending daily at 7 AM
     cron.schedule('0 7 * * *', async () => {
         await sendEmailNotification();
     });
